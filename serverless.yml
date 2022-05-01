@@ -1,0 +1,35 @@
+service: update-ecs-tasks
+frameworkVersion: '3'
+configValidationMode: error
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+  region: eu-west-2
+  stage: prod
+  timeout: 180
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ecs:ListServices
+            - ecs:RegisterTaskDefinition
+            - ecs:DescribeServices
+            - ecs:ListTaskDefinitions
+            - ecs:DescribeTaskDefinition
+            - iam:PassRole
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - codepipeline:PutJobSuccessResult
+            - codepipeline:PutJobFailureResult
+          Resource: '*'
+
+functions:
+  update:
+    handler: handler.lambda_handler  
+
+plugins:
+  - serverless-python-requirements
